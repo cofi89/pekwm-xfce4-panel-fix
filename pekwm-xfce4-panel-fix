@@ -1,0 +1,203 @@
+#!/bin/bash
+###############################################################################
+# ---------------------
+# Pekwm-xfce4-panel-fix
+# ---------------------
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# 2015 Filip Danilovic <filip@openmailbox.org>
+#
+###############################################################################
+
+
+show-usage() {
+
+echo -e "
+#-----------------------#
+# Pekwm-xfce4-panel-fix #
+#-----------------------#
+
+Arguments:
+----------
+ -w	-- Use wmctrl method
+ -x	-- Use xdotool method
+
+Info:
+-----
+This script fixes the problem of windows maximizing over or under xfce4-panel,
+when it's used in pekwm.
+Pekwm recognizes only \"NET_WM_STRUT\" hint, which xfce4-panel doesn't set.
+It sets only a \"NET_WM_STRUT_PARTIAL\".
+However non-partial strut can be set from partial's coordinates, and that is 
+what this script does. With one of the two methods:
+
+1. Using \"wmctrl\" to obtain window id(s) of xfce panel, and providing it/them 
+to the \"xprop\" tool, which then gets partial strut and sets a non-partial one 
+based on it.
+
+2. Using  \"xdotool\" to automatically \"click\" on the xfce panel(s), thus 
+providing \"xprop\" tool with the panel window(s) to act on, which then gets 
+partial strut and sets a non-partial one based on it.
+
+First method is preffered, and one which should be used in most cases. 
+The only problem with it is that if there happens to be another proccess 
+having a \"panel\" in it's name it will also get a strut set, which is obviously
+undesired ( although it shouldn't cause problems ).
+
+Second method only requires that panel is actually visible on screen when 
+xdotool \"clicks\" on it. Default waiting time should be good enough for that.
+Also, it requires you to provide coordinates to \"click\" on. Defaults are for 
+one panel on the bottom of a 1920x1080 screen. If you need to change that, 
+take a look at the \"fix-xdotool\" function starting at line 83.
+
+Autostarting:
+-------------
+Script should be added to the pekwm autostart (~/.pekwm/start), **AFTER**
+xfce4-panel entry, preferably with sleep ( 2-3s should be good ), giving panel 
+enough time to start and show up on screen ( important for \"xdotool\" method ). 
+
+Example:
+xfce4-panel &
+(sleep 2s && /path/to/pekwm-xfce4-panel-fix -w) &
+
+2015 Filip Danilovic <filip@openmailbox.org>
+"
+
+
+}
+
+
+fix-xdotool(){
+
+XY=( '2' '2' )
+
+# Fix the first panel:
+
+STRUT_PARTIAL_FULL=`xprop | grep -e "_NET_WM_STRUT_PARTIAL(CARDINAL)" &
+pid=$!
+sleep 0.1
+xdotool mousemove "${XY[@]}" click 1 mousemove restore
+wait $pid`
+
+STRUT_PARTIAL_SHORT=${STRUT_PARTIAL_FULL#*=}
+
+STRUT_PARTIAL_SHORT_NS=`echo -n "${STRUT_PARTIAL_SHORT//[[:space:]]/}"`
+
+STRUT_FIX=`echo "$STRUT_PARTIAL_SHORT_NS" | cut -d ',' -f -4`
+
+xprop -f _NET_WM_STRUT 32c -set _NET_WM_STRUT "'$STRUT_FIX'" &
+pid=$!
+sleep 0.1
+xdotool mousemove "${XY[@]}" click 1 mousemove restore
+wait $pid
+
+# First panel fixed.
+
+
+# If you have two panels, uncomment the section bellow by first removing 
+# the ": '" line, and the the "'" one bellow the "wait $pid".
+# Then in the "XY=(..." line, replace "x" & "y" with screen coordinates of some 
+# point on that panel. Repeat ( copy/paste ) for third, fourth etc...
+
+#: '
+XY=( '950' '1078' )
+
+STRUT_PARTIAL_FULL=`xprop | grep -e "_NET_WM_STRUT_PARTIAL(CARDINAL)" &
+pid=$!
+sleep 0.1
+xdotool mousemove "${XY[@]}" click 1 mousemove restore
+wait $pid`
+
+STRUT_PARTIAL_SHORT=${STRUT_PARTIAL_FULL#*=}
+
+STRUT_PARTIAL_SHORT_NS=`echo -n "${STRUT_PARTIAL_SHORT//[[:space:]]/}"`
+
+STRUT_FIX=`echo "$STRUT_PARTIAL_SHORT_NS" | cut -d ',' -f -4`
+
+xprop -f _NET_WM_STRUT 32c -set _NET_WM_STRUT "'$STRUT_FIX'" &
+pid=$!
+sleep 0.1
+xdotool mousemove "${XY[@]}" click 1 mousemove restore
+wait $pid
+#'
+
+exit
+}
+
+
+
+fix-wmctrl() {
+
+for panel in `wmctrl -l | grep "xfce4-panel" | awk '{print $1}'`; do
+	PANELS+=( "$panel" )
+done
+
+for id in `echo ${PANELS[@]}`; do
+	STRUT_PARTIAL_FULL=`xprop -id $id | grep -e "_NET_WM_STRUT_PARTIAL(CARDINAL)"`
+	STRUT_PARTIAL_SHORT=${STRUT_PARTIAL_FULL#*=}
+	STRUT_PARTIAL_SHORT_NS=`echo -n "${STRUT_PARTIAL_SHORT//[[:space:]]/}"`
+	STRUT_FIX=`echo "$STRUT_PARTIAL_SHORT_NS" | cut -d ',' -f -4`
+	xprop -id "$id" -f _NET_WM_STRUT 32c -set _NET_WM_STRUT "'$STRUT_FIX'"
+done
+exit
+
+}
+
+
+
+check() {
+sleep 1s
+pan=`ps -A | grep "xfce4-panel"`
+
+if [ ! -z "$pan" ]; then
+sleep 1s
+	if [ "$1" == "w" ];then
+		fix-wmctrl
+	elif [ "$1" == "x" ]; then
+		sleep 4s
+		fix-xdotool
+	fi
+else
+check
+
+fi
+}
+
+
+
+while getopts "xwh" arg; do
+	case $arg in
+		x)
+		check x
+		;;
+		w)
+		check w
+		;;
+		h)
+		show-usage
+		;;
+		*)
+		show-usage
+		;;
+	esac
+done
+
+
+
+if [ -z "$1" ]; then
+	show-usage
+	exit
+fi
