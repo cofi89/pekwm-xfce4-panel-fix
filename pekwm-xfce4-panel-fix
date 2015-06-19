@@ -180,6 +180,36 @@ fi
 
 
 
+dep-check() {
+
+if hash wmctrl 2>/dev/null; then
+	echo "wmctrl = Found!"
+else
+	echo "wmctrl = Not Found! Please install!"
+fi
+
+if hash xprop 2>/dev/null; then
+	echo "xprop = Found!"
+else
+	echo "xprop = Not Found! Please install!"
+fi
+
+if hash xdotool 2>/dev/null; then
+	echo "xdotool = Found!"
+else
+	echo "xdotool = Not Found! Please install!"
+fi
+
+exit
+
+}
+
+
+
+if [ ! -z "$2" ]; then
+	echo "Only one argument is supported!"
+	exit
+else
 while getopts "xwh" arg; do
 	case $arg in
 		x)
@@ -196,7 +226,7 @@ while getopts "xwh" arg; do
 		;;
 	esac
 done
-
+fi
 
 
 if [ -z "$1" ]; then
