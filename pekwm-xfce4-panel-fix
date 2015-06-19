@@ -76,13 +76,13 @@ xfce4-panel &
 2015 Filip Danilovic <filip@openmailbox.org>
 "
 
-
 }
+
 
 
 fix-xdotool(){
 
-XY=( '2' '2' )
+XY=( '950' '1078' )
 
 # Fix the first panel:
 
@@ -112,7 +112,7 @@ wait $pid
 # Then in the "XY=(..." line, replace "x" & "y" with screen coordinates of some 
 # point on that panel. Repeat ( copy/paste ) for third, fourth etc...
 
-#: '
+: '
 XY=( '950' '1078' )
 
 STRUT_PARTIAL_FULL=`xprop | grep -e "_NET_WM_STRUT_PARTIAL(CARDINAL)" &
@@ -132,9 +132,10 @@ pid=$!
 sleep 0.1
 xdotool mousemove "${XY[@]}" click 1 mousemove restore
 wait $pid
-#'
+'
 
 exit
+
 }
 
 
@@ -159,6 +160,7 @@ exit
 
 
 check() {
+	
 sleep 1s
 pan=`ps -A | grep "xfce4-panel"`
 
@@ -171,9 +173,9 @@ sleep 1s
 		fix-xdotool
 	fi
 else
-check
-
+	check
 fi
+
 }
 
 
