@@ -4,6 +4,7 @@ This script fixes the problem of windows maximizing over or under xfce4-panel, w
 Arguments:
 ----------
  -w	-- Use wmctrl method
+ 
  -x	-- Use xdotool method
 
 Info:
