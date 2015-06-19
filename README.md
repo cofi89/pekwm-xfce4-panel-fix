@@ -3,9 +3,11 @@ This script fixes the problem of windows maximizing over or under xfce4-panel, w
 
 Arguments:
 ----------
- -w  -- Use wmctrl method
+ -w  -- Use wmctrl method ( preffered )
  
  -x	 -- Use xdotool method
+ 
+ -c  -- Check if necessary programs are installed
 
 Info:
 -----
@@ -42,3 +44,17 @@ enough time to start and show up on screen ( important for "xdotool" method ).
 Example:
 xfce4-panel &
 (sleep 2s && /path/to/pekwm-xfce4-panel-fix -w) &
+
+Dependencies:
+-------------
+- wmctrl
+- xdotool 
+- xprop
+
+You can use the script to check if they are all installed by running it with "-c" option. 
+
+Xprop is usually installed in major distro's, but in case it's not, it is in:
+"xorg-xprop" - Arch/Manjaro
+"x11-utils" - Debian/Ubuntu
+"xorg-x11-utils" - Fedora/RH
+"xprop" - OpenSuse
