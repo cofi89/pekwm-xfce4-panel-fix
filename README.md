@@ -43,8 +43,7 @@ enough time to start and show up on screen ( important for "xdotool" method ).
 
 Example:
 
-xfce4-panel &
-
+xfce4-panel &  
 (sleep 2s && /path/to/pekwm-xfce4-panel-fix -w) &
 
 Dependencies:
