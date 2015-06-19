@@ -11,9 +11,9 @@ Arguments:
 
 Info:
 -----
-Pekwm recognizes only "NET_WM_STRUT" hint, which xfce4-panel doesn't set.
+Pekwm [recognizes](https://www.pekwm.org/projects/pekwm/mailing_lists/pekwm/mail?mail_id=1061) only "NET_WM_STRUT" hint, which xfce4-panel doesn't set.
 It sets only a "NET_WM_STRUT_PARTIAL".
-However non-partial strut can be set from partial's coordinates, and that is 
+However non-partial [strut](http://standards.freedesktop.org/wm-spec/wm-spec-latest.html#idm140200472580736) can be set from partial's coordinates, and that is 
 what this script does. With one of the two methods:
 
 1. Using "wmctrl" to obtain window id(s) of xfce panel, and providing it/them 
