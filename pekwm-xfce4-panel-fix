@@ -182,22 +182,22 @@ fi
 
 dep-check() {
 
-if hash wmctrl 2>/dev/null; then
-	echo "wmctrl = Found!"
+if hash xprop 2>/dev/null; then
+	echo -e "\nxprop --> Found!"
 else
-	echo "wmctrl = Not Found! Please install!"
+	echo -e "\nxprop --> Not Found! Please install!"
 fi
 
-if hash xprop 2>/dev/null; then
-	echo "xprop = Found!"
+if hash wmctrl 2>/dev/null; then
+	echo "wmctrl --> Found!"
 else
-	echo "xprop = Not Found! Please install!"
+	echo "wmctrl --> Not Found! Please install!"
 fi
 
 if hash xdotool 2>/dev/null; then
-	echo "xdotool = Found!"
+	echo -e "xdotool --> Found!\n"
 else
-	echo "xdotool = Not Found! Please install!"
+	echo -e "xdotool --> Not Found! Please install!\n"
 fi
 
 exit
