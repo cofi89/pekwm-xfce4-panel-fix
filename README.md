@@ -42,7 +42,9 @@ xfce4-panel entry, preferably with sleep ( 2-3s should be good ), giving panel
 enough time to start and show up on screen ( important for "xdotool" method ). 
 
 Example:
+
 xfce4-panel &
+
 (sleep 2s && /path/to/pekwm-xfce4-panel-fix -w) &
 
 Dependencies:
@@ -54,7 +56,8 @@ Dependencies:
 You can use the script to check if they are all installed by running it with "-c" option. 
 
 Xprop is usually installed in major distro's, but in case it's not, it is in:
-"xorg-xprop" - Arch/Manjaro
-"x11-utils" - Debian/Ubuntu
-"xorg-x11-utils" - Fedora/RH
-"xprop" - OpenSuse
+
+- "xorg-xprop" - Arch/Manjaro
+- "x11-utils" - Debian/Ubuntu
+- "xorg-x11-utils" - Fedora/RH
+- "xprop" - OpenSuse
